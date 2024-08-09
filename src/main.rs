@@ -93,14 +93,16 @@ async fn main() {
     let particle_invmoment = 2.6e-4 / r4;
     let mut pts = vec![];
     for x in range(0.1, 0.9, 2.0 * r) {
-        for y in range(0.4, 0.45, 2.0 * r) {
-            pts.push(Particle::new(
+        for y in range(0.4, 0.5, 2.0 * r) {
+            let mut p = Particle::new(
                 particle_invmass,
                 particle_invmoment,
                 r,
                 DVec2::new(x, y),
                 GREEN,
-            ));
+            );
+            p.velocity_mid = DVec2::new(0.0, -5.0);
+            pts.push(p);
         }
     }
     for x in range(0.7, 0.9, 2.0 * r) {
@@ -138,17 +140,17 @@ async fn main() {
         pts.push(Particle::new(0.0, 0.0, r, DVec2::new(0.0, x), GRAY));
         pts.push(Particle::new(0.0, 0.0, r, DVec2::new(1.0, x), GRAY));
     }
-    for x in range(0.2, 0.8, 2.0 * r) {
-        for y in range(0.5, 0.7, 2.0 * r) {
-            pts.push(Particle::new(
-                particle_invmass,
-                particle_invmoment,
-                r,
-                DVec2::new(x, y),
-                ORANGE,
-            ));
-        }
-    }
+    // for x in range(0.2, 0.8, 2.0 * r) {
+    //     for y in range(0.6, 0.8, 2.0 * r) {
+    //         pts.push(Particle::new(
+    //             particle_invmass,
+    //             particle_invmoment,
+    //             r,
+    //             DVec2::new(x, y),
+    //             ORANGE,
+    //         ));
+    //     }
+    // }
     // Extra timestep?
     let s = (1.0 / fps / (7.5e3 * r2 / kn)) as u32 * 10;
     let dt = 1.0 / fps / s as f64;
@@ -231,23 +233,23 @@ async fn main() {
             let a = p.position - DVec2::splat(0.5);
 
             draw_circle(
-                screen_height() / 2.0 + a.x as f32 * scaling,
-                screen_width() / 2.0 - a.y as f32 * scaling,
+                screen_width() / 2.0 + a.x as f32 * scaling,
+                screen_height() / 2.0 - a.y as f32 * scaling,
                 p.radius as f32 * scaling,
                 p.color,
             );
 
             for b in &p.bonds {
-                if !b.broken {
+                if b.broken {
                     continue;
                 }
                 let b = pts[b.endpoint as usize].position - DVec2::splat(0.5);
 
                 draw_line(
-                    screen_height() / 2.0 + a.x as f32 * scaling,
-                    screen_width() / 2.0 - a.y as f32 * scaling,
-                    screen_height() / 2.0 + b.x as f32 * scaling,
-                    screen_width() / 2.0 - b.y as f32 * scaling,
+                    screen_width() / 2.0 + a.x as f32 * scaling,
+                    screen_height() / 2.0 - a.y as f32 * scaling,
+                    screen_width() / 2.0 + b.x as f32 * scaling,
+                    screen_height() / 2.0 - b.y as f32 * scaling,
                     3.0,
                     BLACK,
                 );
